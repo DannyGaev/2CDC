@@ -1,0 +1,52 @@
+Sources:
+	https://akvilekiskis.com/work/metasploitable/index.html
+	https://medium.com/@jai38100/hardening-metasploitable-2-52ec0adf48f2
+
+USE AS NEEDED, MAY HAVE TO ADJUST WHICH SERVICES TO SHUT DOWN DEPENDING ON RULES OF 2CDC
+
+Install iptables*:
+	To help with vsftpd.conf exploit:
+		iptables -A INPUT -p tcp --dport 6200 -j DROP
+		iptables -A INPUT -p udp --dport 6200 -j DROP
+
+	To help with NFS exploit:
+		iptables -A INPUT -p tcp -s <ATTACKER_IP> --dport 2049 -m state: --state NEW,ESTABLISHED,RELATED -j DROP
+		iptables -A OUTPUT -p tcp -s <ATTACKER_IP> --dport 2049 -m state: --state NEW,ESTABLISHED,RELATED -j DROP
+		iptables -A OUTPUT -p udp -s <ATTACKER_IP> --dport 2049 -m state: --state NEW,ESTABLISHED,RELATED -j DROP
+		iptables -A INPUT -p udp -s <ATTACKER_IP> --dport 2049 -m state: --state NEW,ESTABLISHED,RELATED -j DROP
+
+VNC:
+	Use vncpasswd to change default password 
+
+Telnet:
+	Go to /etc/inetd.conf comment out telnet line
+
+Rexec:
+	Go to /etc/inetd.conf comment out shell line
+
+Rlogin:
+	Go to /etc/inetd.conf comment out login line
+
+FTP:
+	Go to/etc/vsftpd.conf and disable anonymous upload for the FTP service.
+
+Samba:
+	Go to /etc/samba/smb.conf and comment out username map script = /etc/samba/scripts/mapusers.sh
+
+
+Ingreslock Backdoor/Bindbash:
+	Go to /etc/inetd.conf and comment out the line that has this => ingreslock stream tcp nowait root /bin/bash bash -i
+
+NFS*:
+	
+PostGres:
+	Go to etc/postgresql/8.3/main/postgresql.conf and change from
+		/var/lib/postgresql/8.3/main
+			to
+		<ANYTHING YOU'D LIKE> (example: /var/lib/postgresql/8.3/datadir)
+
+DistCCd:
+	Patch the service
+
+UnrealIRCD:
+	Uninstall service entirely
